@@ -30,7 +30,7 @@ class GithubClient:
 
     def print_user_info(self) -> None:
         try:
-            data_json = self.get_repo_info()
+            data_json = self.get_user_info()
             pretty_json = json.dumps(data_json, indent=2)
             print(pretty_json)
 
