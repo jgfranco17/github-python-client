@@ -1,5 +1,6 @@
 import json
 from http import HTTPStatus
+from typing import Any, Dict
 
 import requests
 
@@ -23,11 +24,11 @@ class GithubClient:
         else:
             response.raise_for_status()
 
-    def get_user_info(self):
+    def get_user_info(self) -> Dict[str, Any]:
         endpoint = f"users/{self.__user}"
         return self.__make_request("GET", endpoint)
 
-    def print_user_info(self):
+    def print_user_info(self) -> None:
         try:
             data_json = self.get_repo_info()
             pretty_json = json.dumps(data_json, indent=2)
@@ -38,6 +39,6 @@ class GithubClient:
                 f"Unable to parse response as JSON. Content:\n{data_json.text}"
             ) from ve
 
-    def get_repo_info(self, owner, repo):
+    def get_repo_info(self, owner, repo) -> Dict[str, Any]:
         endpoint = f"repos/{owner}/{repo}"
         return self.__make_request("GET", endpoint)
