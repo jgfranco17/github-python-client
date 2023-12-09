@@ -1,6 +1,9 @@
+import json
 from http import HTTPStatus
 
 import requests
+
+from .errors import ClientDataFetchError
 
 
 class GithubClient:
@@ -23,6 +26,17 @@ class GithubClient:
     def get_user_info(self):
         endpoint = f"users/{self.__user}"
         return self.__make_request("GET", endpoint)
+
+    def print_user_info(self):
+        try:
+            data_json = self.get_repo_info()
+            pretty_json = json.dumps(data_json, indent=2)
+            print(pretty_json)
+
+        except ValueError as ve:
+            raise ClientDataFetchError(
+                f"Unable to parse response as JSON. Content:\n{data_json.text}"
+            ) from ve
 
     def get_repo_info(self, owner, repo):
         endpoint = f"repos/{owner}/{repo}"
