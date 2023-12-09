@@ -1,4 +1,5 @@
 import json
+import os
 from http import HTTPStatus
 from typing import Any, Dict
 
@@ -11,6 +12,7 @@ class GithubClient:
     def __init__(self, user: str) -> None:
         self.__url = "https://api.github.com"
         self.__user = user
+        self.__token = os.getenv("GITHUB_TOKEN")
 
     def __make_request(self, method, endpoint, params=None, data=None, headers=None):
         url = f"{self.__url}/{endpoint}"
