@@ -26,13 +26,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-          - name: Get Committer and Repository Information
-          id: commit_info
-          run: |
-            COMMITTER=$(git log -1 --pretty=format:'%an')
-            REPO_NAME=$(basename -s .git $(git config --get remote.origin.url))
-            echo "::set-output name=committer::$COMMITTER"
-            echo "::set-output name=repo_name::$REPO_NAME"
+      - name: Get Committer and Repository Information
+        id: commit_info
+        run: |
+          COMMITTER=$(git log -1 --pretty=format:'%an')
+          REPO_NAME=$(basename -s .git $(git config --get remote.origin.url))
+          echo "::set-output name=committer::$COMMITTER"
+          echo "::set-output name=repo_name::$REPO_NAME"
 
       - name: Send Discord Webhook
         run: |
