@@ -1,7 +1,7 @@
 """Declares this directory as a Python module."""
 import logging
 
-LOGLEVEL = "INFO"
+LOGLEVEL = "DEBUG"
 
 
 def __set_logging_level(level: str) -> None:

@@ -2,11 +2,14 @@ import json
 import logging
 import os
 from http import HTTPStatus
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import requests
 
 from .errors import ClientDataFetchError, ClientRequestError
+from .models import GitHubRepo
+
+logger = logging.getLogger(__name__)
 
 
 class GithubClient:
@@ -15,7 +18,7 @@ class GithubClient:
         self.__user = user
         self.__token = os.getenv("GITHUB_TOKEN")
         self.__api_version = version
-        logging.debug(f"GithubClient created for user {self.__user}")
+        logger.debug(f"GithubClient created for user {self.__user}")
 
     def __make_base_request(
         self, method, endpoint, params=None, data=None, headers=None
@@ -55,6 +58,17 @@ class GithubClient:
                 f"Unable to parse response as JSON. Content:\n{data_json.text}"
             ) from ve
 
-    def get_repo_info(self, owner, repo) -> Dict[str, Any]:
-        endpoint = f"repos/{owner}/{repo}"
-        return self.__make_base_request("GET", endpoint)
+    def get_user_repo_info(self) -> List[GitHubRepo]:
+        endpoint = f"users/{self.__user}/repos"
+        response = self.__make_base_request("GET", endpoint)
+        data = response.json()
+        repositories = []
+
+        try:
+            repositories = [GitHubRepo(**repo) for repo in data]
+            logger.debug(f"Found {len(repositories)} repositories")
+
+        except Exception as error:
+            raise ClientDataFetchError("Failed to fetch list of repos") from error
+
+        return repositories
