@@ -38,10 +38,16 @@ class GithubClient:
             "X-GitHub-Api-Version": self.__api_version,
         }
 
-        response = self.__make_base_request(
-            method=method.upper(), endpoint=endpoint, headers=headers
-        )
-        return response.json()
+        try:
+            response = self.__make_base_request(
+                method=method.upper(), endpoint=endpoint, headers=headers
+            )
+            return response.json()
+
+        except Exception as error:
+            raise ClientRequestError(
+                f"Failed to make authenticated request: {error}"
+            ) from error
 
     def get_user_info(self) -> Dict[str, Any]:
         endpoint = f"users/{self.__user}"
