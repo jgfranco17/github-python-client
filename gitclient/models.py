@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -37,3 +37,26 @@ class GitHubRepo(BaseModel):
 
     def __str__(self) -> str:
         return f"<GithubRepo id={self.id} name={self.name}>"
+
+
+class Commit(BaseModel):
+    author: Dict[str, Any]
+    committer: Dict[str, Any]
+    message: str
+    tree: dict
+    url: str
+
+
+class GitHubCommit(BaseModel):
+    sha: str
+    node_id: str
+    commit: Commit
+    url: str
+    html_url: str
+    comments_url: str
+    author: Dict[str, Any]
+    committer: Dict[str, Any]
+    parents: List[dict]
+
+    def __str__(self) -> str:
+        return f"<GithubCommit SHA={self.sha} url={self.url}>"

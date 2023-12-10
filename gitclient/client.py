@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 import requests
 
 from .errors import ClientDataFetchError, ClientRequestError
-from .models import GitHubRepo
+from .models import GitHubCommit, GitHubRepo
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +42,10 @@ class GithubClient:
             response = self.__make_base_request(
                 method=method.upper(), endpoint=endpoint, headers=headers
             )
+
+            if response.status_code >= 400:
+                raise Exception(f"{response.status_code} - {response.text}")
+
             return response.json()
 
         except Exception as error:
@@ -78,3 +82,10 @@ class GithubClient:
             raise ClientDataFetchError("Failed to fetch list of repos") from error
 
         return repositories
+
+    def get_repo_commits(self, repository: str) -> List[GitHubCommit]:
+        endpoint = f"repos/{self.__user}/{repository}/commits"
+        data = self.__make_authenticated_request("GET", endpoint)
+        commits_list = [GitHubCommit(**repo) for repo in data]
+        logger.debug(f"Found {len(commits_list)} commits in '{repository}'")
+        return commits_list
