@@ -1,6 +1,8 @@
 """Declares this directory as a Python module."""
 import logging
 
+from .client import GithubClient
+
 LOGLEVEL = "DEBUG"
 
 
