@@ -31,6 +31,7 @@ jobs:
         run: |
           COMMITTER=$(git log -1 --pretty=format:'%an')
           REPO_NAME=$(basename -s .git $(git config --get remote.origin.url))
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
           echo "::set-output name=committer::$COMMITTER"
           echo "::set-output name=repo_name::$REPO_NAME"
           echo "::set-output name=commit_message::$COMMIT_MESSAGE"
