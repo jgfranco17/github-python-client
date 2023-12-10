@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from http import HTTPStatus
 from typing import Any, Dict
@@ -14,6 +15,7 @@ class GithubClient:
         self.__user = user
         self.__token = os.getenv("GITHUB_TOKEN")
         self.__api_version = version
+        logging.debug(f"GithubClient created for user {self.__user}")
 
     def __make_base_request(
         self, method, endpoint, params=None, data=None, headers=None
@@ -40,7 +42,7 @@ class GithubClient:
 
     def get_user_info(self) -> Dict[str, Any]:
         endpoint = f"users/{self.__user}"
-        return self.__make_base_request("GET", endpoint)
+        return self.__make_base_request("GET", endpoint).json()
 
     def print_user_info(self) -> None:
         try:
