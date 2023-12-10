@@ -41,7 +41,7 @@ jobs:
           COMMITTER="${{ steps.commit_info.outputs.committer }}"
           REPO_NAME="${{ steps.commit_info.outputs.repo_name }}"
           COMMIT_MESSAGE="${{ steps.commit_info.outputs.commit_message }}"
-          MESSAGE="${COMMITTER} pushed a new commit ${REPO_NAME}: ${COMMIT_MESSAGE}"
+          MESSAGE="${COMMITTER} pushed a new commit ${REPO_NAME}!\n\`\`\`${COMMIT_MESSAGE}\`\`\`"
           curl -X POST -H "Content-Type: application/json" \
             -d '{"content": "'"$MESSAGE"'"}' \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
