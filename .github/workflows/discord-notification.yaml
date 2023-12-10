@@ -26,10 +26,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+          - name: Get Committer and Repository Information
+          id: commit_info
+          run: |
+            COMMITTER=$(git log -1 --pretty=format:'%an')
+            REPO_NAME=$(basename -s .git $(git config --get remote.origin.url))
+            echo "::set-output name=committer::$COMMITTER"
+            echo "::set-output name=repo_name::$REPO_NAME"
+
       - name: Send Discord Webhook
         run: |
+          COMMITTER="${{ steps.commit_info.outputs.committer }}"
+          REPO_NAME="${{ steps.commit_info.outputs.repo_name }}"
+          MESSAGE="New commit pushed to the repository by ${COMMITTER} in ${REPO_NAME}!"
           curl -X POST -H "Content-Type: application/json" \
-            -d '{"content": "New commit pushed to the repository!"}' \
+            -d '{"content": "'"$MESSAGE"'"}' \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
