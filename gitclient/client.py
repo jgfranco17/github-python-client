@@ -1,8 +1,7 @@
 import json
 import logging
 import os
-from http import HTTPStatus
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import requests
 
@@ -21,8 +20,25 @@ class GithubClient:
         logger.debug(f"GithubClient created for user {self.__user}")
 
     def __make_base_request(
-        self, method, endpoint, params=None, data=None, headers=None
+        self,
+        method: str,
+        endpoint: str,
+        params: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
     ) -> requests.Response:
+        """Base request method for interacting with Github API.
+
+        Args:
+            method (str): request method
+            endpoint (str): URL endpoint for API
+            params (Dict[str, Any], optional): Additional request params, defaults to None
+            data (Dict[str, Any], optional): Additional request data, defaults to None
+            headers (Dict[str, Any], optional): Additional request headers, defaults to None
+
+        Returns:
+            requests.Response: Request response data
+        """
         url = f"{self.__url}/{endpoint}"
         response = requests.request(
             method, url, params=params, data=data, headers=headers
@@ -32,6 +48,19 @@ class GithubClient:
     def __make_authenticated_request(
         self, method: str, endpoint: str
     ) -> Dict[str, Any]:
+        """Make an authenticated request to the API.
+
+        Args:
+            method (str): request method
+            endpoint (str): URL endpoint for API
+
+        Raises:
+            Exception: If the response status code is 400 and up
+            ClientRequestError: If any error is propagated
+
+        Returns:
+            Dict[str, Any]: JSON data
+        """
         headers = {
             "Accept": "application/vnd.github+json",
             "Authorization": f"Bearer {self.__token}",
@@ -54,21 +83,23 @@ class GithubClient:
             ) from error
 
     def get_user_info(self) -> Dict[str, Any]:
+        """Fetch user information.
+
+        Returns:
+            Dict[str, Any]: JSON data about the user
+        """
         endpoint = f"users/{self.__user}"
         return self.__make_base_request("GET", endpoint).json()
 
-    def print_user_info(self) -> None:
-        try:
-            data_json = self.get_user_info()
-            pretty_json = json.dumps(data_json, indent=2)
-            print(pretty_json)
-
-        except ValueError as ve:
-            raise ClientDataFetchError(
-                f"Unable to parse response as JSON. Content:\n{data_json.text}"
-            ) from ve
-
     def get_user_repo_info(self) -> List[GitHubRepo]:
+        """Retrieve repository information.
+
+        Raises:
+            ClientDataFetchError: if any request error occurs
+
+        Returns:
+            List[GitHubRepo]: List of repositories for user
+        """
         endpoint = f"users/{self.__user}/repos"
         response = self.__make_base_request("GET", endpoint)
         data = response.json()
@@ -84,6 +115,14 @@ class GithubClient:
         return repositories
 
     def get_repo_commits(self, repository: str) -> List[GitHubCommit]:
+        """Get a list of commits for a given repository.
+
+        Args:
+            repository (str): repository to fetch commits from
+
+        Returns:
+            List[GitHubCommit]: List of commits for the given repository
+        """
         endpoint = f"repos/{self.__user}/{repository}/commits"
         data = self.__make_authenticated_request("GET", endpoint)
         commits_list = [GitHubCommit(**repo) for repo in data]
