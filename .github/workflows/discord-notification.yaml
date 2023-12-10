@@ -8,15 +8,18 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9"]
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Set up Python 3
+        uses: actions/setup-python@v3
         with:
-          python-version: 3.x
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Dependencies
         run: |
