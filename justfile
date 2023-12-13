@@ -14,10 +14,11 @@ setup:
 
 # Run pep8, black, mypy linters
 lint:
-	python -m pylint api/
-	python -m flake8 api/
-	python -m black -l 80 --check api/
-	python -m mypy --ignore-missing-imports api/
+	pip install -r requirements-lint.txt
+	python -m pylint gitclient/
+	python -m flake8 gitclient/
+	python -m black -l 80 --check gitclient/
+	python -m mypy --ignore-missing-imports gitclient/
 
 # Clean unused files
 clean:
