@@ -40,3 +40,8 @@ clean:
 test:
 	@echo "Running unittest suite..."
 	pytest -vv -rA
+
+# Run pre-commit checks
+pre-commit *args:
+	pre-commit run --all-files {{args}}
+	@echo "\nPre-commit checks completed!"
